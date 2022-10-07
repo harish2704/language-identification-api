@@ -1,2 +1,4 @@
-lang-detect-MNB.pkl
-dataset.csv
+*.pkl
+*.csv
+__pycache__
+.bash_history

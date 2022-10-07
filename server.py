@@ -7,9 +7,12 @@ logging.basicConfig(level=logging.DEBUG)
 import falcon
 import falcon.asgi
 from pydantic import BaseModel, Field
+from typing import List
 from spectree import Response, SpecTree, Tag
 
-from language_detector import predict
+from language_detector import predict, model
+
+SUPPORTED_LANGS = model.classes_.tolist()
 
 log = logging.getLogger("server")
 
@@ -33,6 +36,17 @@ class LanguageDetectionRequest(BaseModel):
         schema_extra = {
             "example": {
                 "text": "How are you?",
+            }
+        }
+
+
+class AvailableLanguagesResponse(BaseModel):
+    supported_languages: List[str]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "supported_languages": ["English", "Hindi"],
             }
         }
 
@@ -65,7 +79,14 @@ class LanguageDetection:
         pred = predict(req.context.json.text)
         resp.media = {"lang": pred[1][0], "score": pred[0][0]}
 
+    @api.validate(resp=Response(HTTP_200=AvailableLanguagesResponse))
+    async def on_get(self, req, resp):
+        """
+        Get a list of supported languages
+        """
+        resp.media = {"supported_languages": SUPPORTED_LANGS}
+
 
 app = falcon.asgi.App()
-app.add_route("/api/language-detect", LanguageDetection())
+app.add_route("/api/language/predict", LanguageDetection())
 api.register(app)

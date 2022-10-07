@@ -48,7 +48,7 @@ pip3 install -r ./requirements.txt
 ## checking API response from terminal
 
 ```bash
-curl -X POST  -H "Accept: application/json"  -H "Content-Type: application/json"  "http://localhost:8000/api/language-detect"  -d '{"text": "Hello how old are you"}'
+curl -X POST  -H "Accept: application/json"  -H "Content-Type: application/json"  "http://localhost:8000/api/language/predict"  -d '{"text": "Hello how old are you"}'
 
 # {"lang": "English", "score": 0.9998260997236165}
 ```
